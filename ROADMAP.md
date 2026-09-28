@@ -184,7 +184,7 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
   5. Multi-tenancy: shared database with `restaurant_id` vs. schema or database per tenant
 - **Build:**
   - [ ] GitHub profile: photo, bio, profile README; clean the iris repo
-  - [ ] Create `dispensa-api` repo with README, ROADMAP, CLAUDE.md
+  - [x] Create `dispensa-api` repo with README, ROADMAP, CLAUDE.md
   - [ ] `docs/DESIGN.md` sections 1–4: requirements, architecture, API design, auth & tenancy
 - **Done when:** you can draw Dispensa's architecture from memory and explain every arrow.
 
