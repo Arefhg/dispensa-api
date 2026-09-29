@@ -1,7 +1,7 @@
 # Dispensa — Project Brief & Roadmap to MVP
 
 > *Dispensa* (Italian: "pantry") is a stock-management backend for small restaurants.
-> Owner: Aref Haghgoorostami · Start: 28 September 2026 · MVP target: 6 December 2026
+> Owner: Aref Haghgoorostami · Start: 28 September 2026 · MVP target: 13 December 2026
 
 ---
 
@@ -53,14 +53,15 @@ There is no visual interface yet. The frontend (`dispensa-web`) is the next phas
 - Restaurants, with each restaurant's data isolated from the others
 - Suppliers
 - Ingredients, each with a unit (kg, L, pieces) and a minimum stock level
-- Stock movements: delivery in, usage out, waste, manual correction
+- Stock movements: delivery in, sale out, waste, manual correction (signed, append-only ledger)
 - Deliveries with multiple lines (ingredient, quantity, unit price)
-- Reports: current stock, low-stock list, monthly spending per supplier, waste value
+- Dishes and recipes: a dish links to ingredients via recipe lines
+- Sales: recording dishes sold subtracts their recipe ingredients from stock
+- Reports: current stock, low-stock list, dish availability, monthly spending per supplier, waste value
 
 ### Out of scope for MVP (later phases)
 
 - Web interface → `dispensa-web` (December–January)
-- Recipes and dishes (selling a pizza automatically removes its ingredients)
 - Email or Telegram alerts
 - Reading supplier invoices from a photo, demand forecasting → `dispensa-ai` (February–April)
 - Payments, multiple languages, mobile app
@@ -133,20 +134,27 @@ Why this matters: nothing is ever silently overwritten, every number can be expl
 
 | Method | Path | Who | Purpose |
 |---|---|---|---|
-| POST | `/auth/register` | anyone | Create a restaurant and its owner account |
-| POST | `/auth/login` | anyone | Get a login token |
-| GET | `/me` | logged in | Current user |
-| POST / GET | `/users` | owner | Add staff / list staff |
-| POST / GET / PATCH / DELETE | `/suppliers` | owner (write), all (read) | Manage suppliers |
-| POST / GET / PATCH / DELETE | `/ingredients` | owner (write), all (read) | Manage ingredients (an ingredient with history is archived, never deleted) |
-| GET | `/ingredients/{id}/movements` | all | Full history of one ingredient |
-| POST | `/movements` | all | Record usage, waste, or correction |
-| POST / GET | `/deliveries` | all | Record a delivery (creates IN movements) |
-| GET | `/reports/stock` | all | Current stock for every ingredient |
-| GET | `/reports/low-stock` | all | Ingredients under their minimum |
-| GET | `/reports/spending?month=2026-11` | owner | Spending per supplier |
-| GET | `/reports/waste?month=2026-11` | owner | Waste quantity and value |
-| GET | `/health` | anyone | Is the server alive? |
+| POST | `/auth/register` | anyone | Create restaurant + owner |
+| POST | `/auth/login` | anyone | Get a token |
+| GET | `/me` | logged in | Current user and restaurant |
+| PATCH | `/restaurant` | owner | Edit restaurant profile |
+| POST / GET | `/users` | owner | Add / list staff |
+| PATCH | `/users/{id}` | owner | Edit or deactivate a user |
+| CRUD | `/suppliers` | owner | Manage suppliers |
+| GET | `/ingredients` | all | Owner: full list. Staff: names and units only (for waste) |
+| POST / PATCH / DELETE | `/ingredients` | owner | Manage ingredients (archive, never delete with history) |
+| GET | `/ingredients/{id}/movements` | owner | Full history of one ingredient |
+| CRUD | `/dishes` | owner (write), all (read) | Dishes and their recipe lines |
+| POST / GET | `/deliveries` | owner | Record / list deliveries |
+| POST | `/sales` | all | Record dishes sold → sale movements |
+| POST | `/waste` | all | Record waste |
+| POST | `/corrections` | owner | Fix stock after a count |
+| GET | `/reports/availability` | all | Portions possible per dish |
+| GET | `/reports/stock` | owner | Current stock per ingredient |
+| GET | `/reports/low-stock` | owner | Ingredients under minimum |
+| GET | `/reports/spending?month=YYYY-MM` | owner | Spending per supplier |
+| GET | `/reports/waste?month=YYYY-MM` | owner | Waste quantity and value |
+| GET | `/health` | anyone | Liveness check |
 
 ## 7. Concepts you will learn
 
@@ -170,7 +178,7 @@ Why this matters: nothing is ever silently overwritten, every number can be expl
 5. **Commit at the end of every project session**, even if the work is small.
 6. **Never commit secrets.** Real values go in `.env` (ignored by git); commit only `.env.example`.
 
-## 9. Roadmap: 10 weeks to MVP
+## 9. Roadmap: 10 build weeks to MVP (11 calendar weeks — week 8 runs two weeks to absorb dishes/recipes/sales)
 
 Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–13:00, plus the extra afternoon blocks on Tuesday and Thursday).
 
@@ -241,29 +249,32 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
   - [ ] Tests: staff can't delete suppliers; restaurant A can't see restaurant B
 - **Done when:** the isolation tests pass.
 
-### Week 7 — 9 Nov → 15 Nov · Stock ledger
+### Week 7 — 9 Nov → 15 Nov · Stock ledger, dishes & recipes
 
-- **Learn:** database constraints, indexes, aggregate queries.
+- **Learn:** database constraints, indexes, aggregate queries, row locking.
 - **Build:**
-  - [ ] `stock_movements` model and migration
-  - [ ] `POST /movements` for usage, waste, correction; reject impossible values
+  - [ ] `stock_movements` model and migration (signed quantity, per-type `CHECK`: delivery > 0, sale < 0, waste < 0, correction != 0)
+  - [ ] `dishes` and `recipe_lines` models and migration; dishes CRUD (owner)
+  - [ ] `POST /waste`; `POST /corrections` (takes counted quantity, computes delta, `SELECT ... FOR UPDATE`); reject impossible values
   - [ ] Current stock computed from movements
   - [ ] `/reports/stock` and `/reports/low-stock`
   - [ ] Ingredient history endpoint
   - [ ] Archive instead of delete for ingredients that have movements
 - **Done when:** stock numbers are always explained by their movement history.
 
-### Week 8 — 16 Nov → 22 Nov · Deliveries & reports
+### Week 8 — 16 Nov → 29 Nov (two weeks) · Deliveries, sales & reports
 
 - **Learn:** transactions in practice, pagination and filtering, API error design.
 - **Build:**
-  - [ ] Deliveries with multiple lines, saved in one transaction, creating IN movements
+  - [ ] Deliveries with multiple lines, saved in one transaction, creating delivery movements
+  - [ ] `POST /sales`, multi-item, saved in one transaction, copies each dish's recipe into movements at sale time
+  - [ ] `/reports/availability` (portions per dish, floored at 0)
   - [ ] Pagination and filters on list endpoints (by date, supplier, type)
-  - [ ] `/reports/spending` and `/reports/waste`
+  - [ ] `/reports/spending` and `/reports/waste` (month evaluated in the restaurant's timezone)
   - [ ] Consistent error responses
-- **Done when:** a delivery with one invalid line saves nothing at all.
+- **Done when:** a delivery or a sale with one invalid line saves nothing at all.
 
-### Week 9 — 23 Nov → 29 Nov · Deploy to your server
+### Week 9 — 30 Nov → 6 Dec · Deploy to your server
 
 - **Learn:** Linux server basics, SSH keys, firewalls, Docker in production, HTTPS.
 - **Build:**
@@ -275,7 +286,7 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
   - [ ] Automatic daily database backups, and one restore actually tested
 - **Done when:** a friend can open the API docs from their phone.
 
-### Week 10 — 30 Nov → 6 Dec · Polish & release v1.0 (MVP)
+### Week 10 — 7 Dec → 13 Dec · Polish & release v1.0 (MVP)
 
 - **Build:**
   - [ ] GitHub Actions deploy on every tagged release
@@ -307,9 +318,8 @@ Each version = one tagged release with notes.
 
 | Version | When | Feature |
 |---|---|---|
-| **v1.1** | mid-December | **Recipes & sales:** dishes are linked to ingredients; recording "sold 40 margheritas" removes their ingredients from stock automatically |
-| v1.2 | December | **Suggested orders:** from low stock and past usage, a proposed order per supplier |
-| v1.3 | January | **Alerts:** email/Telegram low-stock alerts sent by background workers (task queue) |
+| **v1.1** | late December | **Suggested orders:** from low stock and past usage, a proposed order per supplier |
+| v1.2 | January | **Alerts:** email/Telegram low-stock alerts sent by background workers (task queue) |
 
 Then:
 
