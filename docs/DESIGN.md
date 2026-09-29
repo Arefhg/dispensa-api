@@ -77,6 +77,7 @@ Conventions:
 - Errors use one shape: `{"error": {"code": "...", "message": "..."}}`. Status codes: 400/422 bad input, 401 not logged in, 403 not allowed, 404 not found **or belongs to another restaurant**, 409 conflict.
 - Lists are paginated: `?limit=50&offset=0`.
 - Quantities are decimals in the ingredient's unit; money is in EUR with 2 decimals.
+- `month` filters on `/reports/spending` and `/reports/waste` are evaluated in the restaurant's `timezone` (§5), not UTC.
 
 | Method | Path | Who | Purpose |
 |---|---|---|---|
@@ -161,7 +162,7 @@ restaurants ─< sales ─< sale_items >─ dishes
 
 Constraints:
 - Names unique per restaurant: `UNIQUE (restaurant_id, name)`.
-- Quantities and prices `> 0` (`CHECK`), except correction movements, which can be negative.
+- Quantities are signed, checked per type: `delivery > 0`, `sale < 0`, `waste < 0`, `correction != 0`. Prices (`unit_price`, `unit_cost`) are always `> 0`.
 - Movement `type` ∈ `delivery`, `sale`, `waste`, `correction`.
 - Quantities `NUMERIC(12,3)`, money `NUMERIC(10,2)`. Never floats for money.
 
@@ -174,9 +175,11 @@ Constraints:
 - Each movement links back to what caused it (`source_type`, `source_id`: a delivery, a sale, or nothing for waste/corrections).
 - **A sale copies the recipe at the moment of sale** into movements. If the recipe changes later, past stock numbers don't change.
 - **Transactions:** a delivery with all its lines, or a sale with all its items, is saved in one database transaction — all or nothing.
-- **Negative stock is allowed, and flagged.** If a sale would take stock below zero, the sale is still saved (the pizza was really sold; refusing it would make the data lie). The report shows the negative number, which tells the owner a delivery or count is missing.
-- **Availability** = for each dish, the minimum over its recipe lines of `floor(stock / quantity_per_portion)`. Computed when asked, not stored.
+- **Negative stock is allowed, and flagged.** If a sale or a waste record would take stock below zero, it is still saved (the pizza was really sold, the tomatoes really went bad; refusing it would make the data lie). The owner's `/reports/stock` shows the negative number as-is, which tells them a delivery or count is missing.
+- **Availability** = for each dish, the minimum over its recipe lines of `floor(stock / quantity_per_portion)`, floored at 0 for display — a dish never shows negative portions to staff. The owner's stock report still shows the raw, possibly negative, ingredient stock.
 - **Waste value** uses the last delivery price of that ingredient (stored as `unit_cost` on the movement when it is created).
+- **Corrections** take the *counted* absolute quantity from a physical stock count, not a delta. The server computes `delta = counted - current_stock` and stores that delta as the movement quantity. The read-current-stock-then-insert pair locks the ingredient row (`SELECT ... FOR UPDATE`) so two concurrent counts on the same ingredient can't race.
+- **Concurrency:** deliveries, sales and waste are pure inserts — no read-modify-write — so two staff acting on the same ingredient at the same time just produce two independent movement rows; there's no race to resolve. Corrections are the one place that reads current stock before writing, which is why they take the row lock above.
 
 ---
 
@@ -212,7 +215,7 @@ None in v1.0. Everything happens inside the request. Alerts (v1.3) will introduc
 | Recipes & sales in the MVP (moved from v1.1) | Staff's main job is recording sales; without recipes the staff role is almost empty | ~1 extra week; v1.0 target moves to 13 December |
 | Only the owner records deliveries | Owner handles invoices and prices | Delivery may be entered after it arrives → `delivered_on` field |
 | Staff don't see ingredient stock or prices | Owner's choice; staff only need dish availability | Two views of the same data |
-| Negative stock allowed | Real sales must never be rejected | Reports can show negative numbers |
+| Negative stock allowed | Real sales and waste must never be rejected | Owner's stock report can show negative numbers; availability is floored at 0 for staff |
 | Deactivate, never delete users | History keeps who did what | Inactive users stay in the table |
 | Shared DB + `restaurant_id` | Simple to run and migrate | Isolation depends on every query → enforced by one helper and tests |
 | JWT 8 h, no refresh | Simple; one login per shift | User logs in again after 8 h |
