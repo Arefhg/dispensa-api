@@ -1,11 +1,11 @@
-"""Create the dev restaurant used by app.deps.DEV_RESTAURANT_ID.
+"""Create the dev restaurant for local manual testing.
 
 Safe to run more than once: if it already exists, does nothing.
 Run: .venv/Scripts/python.exe scripts/seed_dev.py
+Then put the printed id in .env as DEV_RESTAURANT_ID.
 """
 
 from app.db import SessionLocal
-from app.deps import DEV_RESTAURANT_ID
 from app.models import Restaurant
 
 DEV_RESTAURANT_NAME = "Dev Restaurant"
@@ -28,12 +28,7 @@ def main() -> None:
         db.refresh(restaurant)
 
         print(f"Created dev restaurant: id={restaurant.id}")
-        if restaurant.id != DEV_RESTAURANT_ID:
-            print(
-                f"WARNING: app.deps.DEV_RESTAURANT_ID is {DEV_RESTAURANT_ID}, "
-                f"but the created restaurant has id={restaurant.id}. "
-                "Update DEV_RESTAURANT_ID to match, or start from an empty database."
-            )
+        print(f"Put this in .env: DEV_RESTAURANT_ID={restaurant.id}")
 
 
 if __name__ == "__main__":
