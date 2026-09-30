@@ -1,3 +1,4 @@
+import os
 from logging.config import fileConfig
 
 from alembic import context
@@ -17,8 +18,12 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # DATABASE_URL comes from app.config.settings (.env), not alembic.ini, so the
-# connection string is defined in exactly one place.
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# connection string is defined in exactly one place. DATABASE_URL_OVERRIDE lets
+# the test suite point this at dispensa_test instead (see tests/conftest.py);
+# it's never set outside of that.
+config.set_main_option(
+    "sqlalchemy.url", os.environ.get("DATABASE_URL_OVERRIDE", settings.database_url)
+)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
