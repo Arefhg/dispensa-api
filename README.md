@@ -55,6 +55,16 @@ ruff format --check .
 mypy app tests
 ```
 
+## Database
+
+```bash
+cp .env.example .env        # PowerShell: copy .env.example .env
+# edit .env: set real POSTGRES_PASSWORD, matching password in DATABASE_URL, and a random JWT_SECRET
+
+docker compose up -d        # starts PostgreSQL 16, bound to 127.0.0.1 only
+alembic current              # shows the applied migration (empty until the first one is added)
+```
+
 ## License
 
 MIT
