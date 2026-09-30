@@ -33,7 +33,26 @@ Client ──HTTPS──▶ Caddy ──▶ FastAPI app ──▶ PostgreSQL
 
 ## Run locally
 
-_Coming in week 1._
+Requires Python 3.12.
+
+```bash
+py -3.12 -m venv .venv
+.venv/Scripts/activate          # PowerShell: .venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+
+uvicorn app.main:app --reload
+```
+
+Open `http://localhost:8000/docs` for the interactive API docs.
+
+Run checks:
+
+```bash
+pytest
+ruff check .
+ruff format --check .
+mypy app tests
+```
 
 ## License
 
