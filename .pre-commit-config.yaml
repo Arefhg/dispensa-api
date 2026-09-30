@@ -9,4 +9,4 @@ repos:
     rev: v2.3.1
     hooks:
       - id: mypy
-        additional_dependencies: ["fastapi", "httpx"]
+        additional_dependencies: ["fastapi", "httpx", "sqlalchemy", "alembic", "pydantic-settings"]

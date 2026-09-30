@@ -220,3 +220,4 @@ None in v1.0. Everything happens inside the request. Alerts (v1.3) will introduc
 | Shared DB + `restaurant_id` | Simple to run and migrate | Isolation depends on every query → enforced by one helper and tests |
 | JWT 8 h, no refresh | Simple; one login per shift | User logs in again after 8 h |
 | PDF uploads postponed | Needs storage, limits and backups | Invoices are kept outside the app for now |
+| Sync SQLAlchemy | Simpler code and tests, enough for our scale | Switch to async only if measured load needs it |
