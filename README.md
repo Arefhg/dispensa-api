@@ -39,6 +39,7 @@ Requires Python 3.12.
 py -3.12 -m venv .venv
 .venv/Scripts/activate          # PowerShell: .venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
+pre-commit install
 
 uvicorn app.main:app --reload
 ```
