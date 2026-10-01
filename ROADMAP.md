@@ -229,10 +229,10 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
 
 - **Learn:** pytest, testing an API, GitHub Actions basics.
 - **Build:**
-  - [ ] Separate test database, pytest fixtures
-  - [ ] Tests for every ingredients endpoint, including invalid input
+  - [x] Separate test database, pytest fixtures
+  - [x] Tests for every ingredients endpoint, including invalid input
   - [ ] Suppliers CRUD with tests
-  - [ ] GitHub Actions: lint + type-check + tests on every push; CI badge in README
+  - [x] GitHub Actions: lint + type-check + tests on every push; CI badge in README
   - [ ] Test coverage report (target 80%+) with badge
   - [ ] Structured JSON logs with a request ID on every request
 - **Done when:** a broken test turns the pull request red.

@@ -4,6 +4,38 @@ One entry per session, newest first. Written at the end of each session per CLAU
 
 ---
 
+## 2026-10-01
+
+**Built**
+- Set up a weekly status report routine (Claude Code Routines, Fridays 17:55) that generates a PDF report and opens a PR
+- Investigated three unexpected `claude/*` branches on GitHub with duplicate "weekly status report" commits, confirmed with Aref they were test runs of that new routine, deleted all three and pruned stale local branch refs
+- Merged PR #10 `docs/worklog`: `docs/WORKLOG.md` and the CLAUDE.md end-of-session rule to keep it updated
+- PR #14 `chore/tick-roadmap-checkboxes`: ticked ROADMAP.md checkboxes for weeks 1–3 build items that were already merged but never checked off; second commit strengthened CLAUDE.md's end-of-session rule ("tick finished ROADMAP boxes" explicit, and time spent must be asked, never estimated)
+- PR #15 `docs/e-invoice`: added a planned e-invoice import (v1.1) design to DESIGN.md (§1.5 out-of-scope note, §6 till-optional note, §10 trade-off row, new §11 design-only section); reordered the post-MVP roadmap (v1.1 e-invoice, v1.2 suggested orders, v1.3 alerts)
+- PR #16 `ci/github-actions`: added `.github/workflows/ci.yml` (PostgreSQL 16 service container, ruff/mypy/pytest, mypy scoped to match pre-commit exactly, read-only permissions, concurrency cancellation, 15-minute timeout, pinned to `ubuntu-24.04`), CI badge in README; also fixed a stale "end of November" MVP date in README while adding the badge; watched the run go green both before and after the runner pin
+- Enabled branch protection on `main`: required status check `test`, strict (must be up to date before merge), enforced for admins too
+- Ticked three more week 5 checkboxes (test database/fixtures, ingredients endpoint tests, GitHub Actions CI) — done ahead of schedule
+
+**Decisions**
+- `enforce_admins: true` on branch protection — deliberately removes Aref's own ability to bypass a red check via the merge button, not just other contributors'
+- Runner pinned to `ubuntu-24.04` instead of `ubuntu-latest`, after CI's own annotation warned `ubuntu-latest` migrates to Ubuntu 26 on 2026-10-19
+- CI's mypy step covers `app tests migrations scripts`, matching pre-commit's local (unfiltered) scope exactly, so CI can't pass on something pre-commit would have blocked locally
+- Test credentials in `ci.yml` are plain, disposable values, not GitHub Secrets — deliberate, since they only ever exist for one ephemeral service container per run
+
+**Learned**
+- `enforce_admins` in GitHub's branch-protection API specifically controls whether required checks apply to the repo owner too — without it, an admin can still merge a red PR through the UI
+- Enabling any branch protection bundles in a few things you didn't explicitly ask for (blocked force-pushes, blocked branch deletion) as GitHub defaults
+- `concurrency.group` keyed on `github.ref` scopes cancellation to one ref at a time — pushes to two different branches/PRs never cancel each other, only a superseded push to the *same* one does
+- `permissions: contents: read` caps a workflow's token at read-only regardless of context — it can check out and test code but can't push, tag, or modify anything
+
+**Problems hit & how they were solved**
+- Found three branches with duplicate "weekly report" commits that looked unfamiliar at first — investigated (commit contents, PR history, this session's own cron registrations) before touching anything, confirmed with Aref they were test runs of the new routine, then deleted and pruned
+- README's "Status" line still said "end of November 2026" for the MVP target, three weeks after DESIGN.md/ROADMAP.md had already moved it to 13 December — caught and fixed while adding the CI badge to the same file
+
+**Time spent:** 1h 50m (9:30–11:20): ~30 min session routine/cleanup, ~1h 20m on ROADMAP/e-invoice planning and CI setup.
+
+---
+
 ## 2026-09-30
 
 **Built**
