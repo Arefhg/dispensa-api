@@ -318,12 +318,13 @@ Each version = one tagged release with notes.
 
 | Version | When | Feature |
 |---|---|---|
-| **v1.1** | late December | **Suggested orders:** from low stock and past usage, a proposed order per supplier |
-| v1.2 | January | **Alerts:** email/Telegram low-stock alerts sent by background workers (task queue) |
+| **v1.1** | late December – January | **E-invoice import:** owner uploads a supplier's FatturaPA XML invoice; deliveries are created automatically |
+| v1.2 | January | **Suggested orders:** from low stock and past usage, a proposed order per supplier |
+| v1.3 | February | **Alerts:** email/Telegram low-stock alerts sent by background workers (task queue) |
 
 Then:
 
 | When | Repository | Purpose |
 |---|---|---|
 | December–January | `dispensa-web` | React + TypeScript interface for the API |
-| February–April | `dispensa-ai` | First AI-engineering project: supplier invoice photo → delivery lines; demand forecasting; an assistant that answers questions about the restaurant's data |
+| February–April | `dispensa-ai` | First AI-engineering project: till sales integration; paper receipt photos → delivery lines (suppliers without e-invoicing); demand forecasting; an assistant that answers questions about the restaurant's data |
