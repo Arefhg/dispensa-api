@@ -52,7 +52,7 @@ def update_ingredient(
         db.commit()
     except IntegrityError as exc:
         db.rollback()
-        raise ConflictError(f"An ingredient named '{ingredient.name}' already exists.") from exc
+        raise ConflictError(f"An ingredient named '{data.name}' already exists.") from exc
     db.refresh(ingredient)
     return ingredient
 
