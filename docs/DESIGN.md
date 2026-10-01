@@ -44,7 +44,7 @@ Small restaurants track stock on paper or in their heads. They run out of ingred
 - **Scale target:** up to ~100 restaurants, a few thousand movements per restaurant per month.
 
 ### 1.5 Out of scope for v1.0
-Web interface, PDF/file uploads (e.g. invoices), alerts, suggested orders, multiple languages, payments, AI features.
+Web interface, PDF/file uploads (e.g. invoices), alerts, suggested orders, multiple languages, payments, AI features, importing deliveries from the supplier's electronic invoice (FatturaPA XML) → v1.1.
 
 ---
 
@@ -180,6 +180,7 @@ Constraints:
 - **Waste value** uses the last delivery price of that ingredient (stored as `unit_cost` on the movement when it is created).
 - **Corrections** take the *counted* absolute quantity from a physical stock count, not a delta. The server computes `delta = counted - current_stock` and stores that delta as the movement quantity. The read-current-stock-then-insert pair locks the ingredient row (`SELECT ... FOR UPDATE`) so two concurrent counts on the same ingredient can't race.
 - **Concurrency:** deliveries, sales and waste are pure inserts — no read-modify-write — so two staff acting on the same ingredient at the same time just produce two independent movement rows; there's no race to resolve. Corrections are the one place that reads current stock before writing, which is why they take the row lock above.
+- **A till is optional.** End-of-day sales entry ("today: 40 margherita") is already supported by `POST /sales`.
 
 ---
 
@@ -221,3 +222,14 @@ None in v1.0. Everything happens inside the request. Alerts (v1.3) will introduc
 | JWT 8 h, no refresh | Simple; one login per shift | User logs in again after 8 h |
 | PDF uploads postponed | Needs storage, limits and backups | Invoices are kept outside the app for now |
 | Sync SQLAlchemy | Simpler code and tests, enough for our scale | Switch to async only if measured load needs it |
+| Deliveries from e-invoice XML (v1.1) before photo AI | Italian suppliers must send B2B invoices as XML, so the data is exact | Supplier product names and units must be matched to ingredients once |
+
+---
+
+## 11. Planned: e-invoice import (v1.1)
+
+Design only — no code in v1.0.
+
+- The owner uploads the XML file.
+- A `supplier_products` table maps supplier product code → ingredient + unit conversion factor, learned the first time.
+- Each invoice is imported once: unique on `(restaurant_id, supplier_vat_number, invoice_number)`.
