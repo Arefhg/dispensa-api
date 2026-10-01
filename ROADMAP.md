@@ -231,9 +231,9 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
 - **Build:**
   - [x] Separate test database, pytest fixtures
   - [x] Tests for every ingredients endpoint, including invalid input
-  - [ ] Suppliers CRUD with tests
+  - [x] Suppliers CRUD with tests
   - [x] GitHub Actions: lint + type-check + tests on every push; CI badge in README
-  - [ ] Test coverage report (target 80%+) with badge
+  - [x] Test coverage report (target 80%+), enforced in CI — no badge (would go stale)
   - [ ] Structured JSON logs with a request ID on every request
 - **Done when:** a broken test turns the pull request red.
 
