@@ -193,7 +193,7 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
 - **Build:**
   - [ ] GitHub profile: photo, bio, profile README; clean the iris repo
   - [x] Create `dispensa-api` repo with README, ROADMAP, CLAUDE.md
-  - [ ] `docs/DESIGN.md` sections 1–4: requirements, architecture, API design, auth & tenancy
+  - [x] `docs/DESIGN.md` sections 1–4: requirements, architecture, API design, auth & tenancy
 - **Done when:** you can draw Dispensa's architecture from memory and explain every arrow.
 
 ### Week 2 — 5 Oct → 11 Oct · System design II: data & operations
@@ -205,19 +205,19 @@ Weekly budget: ~10 h learning (mornings, 9:00–11:00) + ~11 h project (11:20–
   9. Background jobs and queues; scheduled tasks; idempotency
   10. Operating a system: deployment, backups, logs, monitoring, failure modes, how to scale step by step
 - **Build:**
-  - [ ] `docs/DESIGN.md` sections 5–9: data model, consistency, performance, jobs, operations & scaling, trade-offs
-  - [ ] Design review with Claude Code; fix what it finds
-  - [ ] Project skeleton: FastAPI "hello world", Ruff, mypy, pre-commit, `.gitignore`, `.env.example`; `/health` running locally
+  - [x] `docs/DESIGN.md` sections 5–9: data model, consistency, performance, jobs, operations & scaling, trade-offs
+  - [x] Design review with Claude Code; fix what it finds
+  - [x] Project skeleton: FastAPI "hello world", Ruff, mypy, pre-commit, `.gitignore`, `.env.example`; `/health` running locally
 - **Done when:** the design doc is merged and `http://localhost:8000/docs` opens.
 
 ### Week 3 — 12 Oct → 18 Oct · Database
 
 - **Learn:** SQL basics (SELECT, JOIN, GROUP BY), PostgreSQL, Docker basics.
 - **Build:**
-  - [ ] PostgreSQL in Docker Compose
-  - [ ] SQLAlchemy models: `restaurants`, `ingredients`
-  - [ ] First Alembic migration
-  - [ ] Ingredients CRUD (create, list, read, update, delete)
+  - [x] PostgreSQL in Docker Compose
+  - [x] SQLAlchemy models: `restaurants`, `ingredients`
+  - [x] First Alembic migration
+  - [x] Ingredients CRUD (create, list, read, update, delete)
 - **Done when:** ingredients survive an app restart because they live in the database.
 - *Exam review starts (30 min/day).*
 
