@@ -1,0 +1,13 @@
+{
+  "weeks": [
+    {
+      "week_ending": "2026-10-02",
+      "week_label": "Week 1 (28 Sep - 2 Oct 2026)",
+      "prs_merged": 7,
+      "commits": 12,
+      "tests_passing": 11,
+      "roadmap_done": 1,
+      "roadmap_total": 58
+    }
+  ]
+}
