@@ -113,7 +113,8 @@ I have the GitHub CLI (`gh`) logged in. You may use `git` and `gh` for:
 **At the end of every session (even if the work is unfinished):**
 1. Commit the work with a clear message and push (a draft PR is fine for unfinished work).
 2. Tick finished roadmap checkboxes.
-3. Give me a 3-line summary: what I did, what I learned, what's next. I log my hours from this.
+3. Append an entry to `docs/WORKLOG.md` for this session, committed with the session's work: date, what was built (PR numbers), decisions made and why, what I learned, problems hit and how they were solved, and time spent.
+4. Give me a 3-line summary: what I did, what I learned, what's next. I log my hours from this.
 
 ## 9. Environment notes
 
