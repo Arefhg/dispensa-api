@@ -1,8 +1,10 @@
 # Dispensa API
 
+[![CI](https://github.com/Arefhg/dispensa-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Arefhg/dispensa-api/actions/workflows/ci.yml)
+
 > Stock management for small restaurants: every delivery, usage and waste recorded in a ledger, so the owner always knows what's in the storeroom and what it costs.
 
-🚧 **Status:** in development — MVP (v1.0) planned for end of November 2026. See the [roadmap](ROADMAP.md).
+🚧 **Status:** in development — MVP (v1.0) planned for 13 December 2026. See the [roadmap](ROADMAP.md).
 
 ## The problem
 
