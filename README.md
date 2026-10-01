@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/Arefhg/dispensa-api/actions/workflows/ci.yml/badge.svg)](https://github.com/Arefhg/dispensa-api/actions/workflows/ci.yml)
 
+Test coverage is enforced at ≥ 80% in CI; the current number is in each CI run's summary.
+
 > Stock management for small restaurants: every delivery, usage and waste recorded in a ledger, so the owner always knows what's in the storeroom and what it costs.
 
 🚧 **Status:** in development — MVP (v1.0) planned for 13 December 2026. See the [roadmap](ROADMAP.md).

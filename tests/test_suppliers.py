@@ -51,6 +51,15 @@ def test_update_supplier(client: TestClient) -> None:
     assert response.json()["phone"] == "+39 081 7654321"
 
 
+def test_update_email_is_lowercased(client: TestClient) -> None:
+    created = _create_supplier(client)
+
+    response = client.patch(f"/suppliers/{created['id']}", json={"email": "New@Contact.COM"})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "new@contact.com"
+
+
 def test_archive_hides_from_list_but_not_from_direct_get(client: TestClient) -> None:
     created = _create_supplier(client)
 
