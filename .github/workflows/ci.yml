@@ -61,4 +61,14 @@ jobs:
         run: mypy app tests migrations scripts
 
       - name: Pytest
-        run: pytest
+        run: pytest --cov-fail-under=80
+
+      - name: Coverage summary
+        if: always()
+        run: |
+          {
+            echo "## Coverage"
+            echo '```'
+            coverage report || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
