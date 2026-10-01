@@ -76,6 +76,16 @@ def test_duplicate_name_is_conflict(client: TestClient) -> None:
     assert response.json()["error"]["code"] == "conflict"
 
 
+def test_rename_to_existing_name_is_conflict(client: TestClient) -> None:
+    _create_ingredient(client, name="Flour")
+    other = _create_ingredient(client, name="Sugar")
+
+    response = client.patch(f"/ingredients/{other['id']}", json={"name": "Flour"})
+
+    assert response.status_code == 409
+    assert "Flour" in response.json()["error"]["message"]
+
+
 def test_bad_unit_is_invalid(client: TestClient) -> None:
     response = client.post("/ingredients", json={"name": "X", "unit": "grams", "min_stock": 1})
 
