@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from app.api.auth import router as auth_router
 from app.api.ingredients import router as ingredients_router
 from app.api.suppliers import router as suppliers_router
 from app.errors import register_error_handlers
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 app = FastAPI(title="Dispensa API", lifespan=lifespan)
 app.add_middleware(RequestIdMiddleware)
 register_error_handlers(app)
+app.include_router(auth_router)
 app.include_router(ingredients_router)
 app.include_router(suppliers_router)
 
