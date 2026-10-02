@@ -23,6 +23,12 @@ class ConflictError(Exception):
         super().__init__(message)
 
 
+class UnauthorizedError(Exception):
+    def __init__(self, message: str = "Unauthorized") -> None:
+        self.message = message
+        super().__init__(message)
+
+
 def _error_body(code: str, message: str) -> dict[str, dict[str, str]]:
     return {"error": {"code": code, "message": message}}
 
@@ -35,6 +41,14 @@ def register_error_handlers(app: FastAPI) -> None:
     @app.exception_handler(ConflictError)
     async def handle_conflict(request: Request, exc: ConflictError) -> JSONResponse:
         return JSONResponse(status_code=409, content=_error_body("conflict", exc.message))
+
+    @app.exception_handler(UnauthorizedError)
+    async def handle_unauthorized(request: Request, exc: UnauthorizedError) -> JSONResponse:
+        return JSONResponse(
+            status_code=401,
+            content=_error_body("unauthorized", exc.message),
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     @app.exception_handler(RequestValidationError)
     async def handle_validation_error(
