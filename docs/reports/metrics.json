@@ -1,0 +1,19 @@
+{
+  "weeks": [
+    {
+      "week_ending": "2026-10-02",
+      "week_start": "2026-09-28",
+      "report": "docs/reports/status-2026-10-02.pdf",
+      "status": "ahead",
+      "prs_merged": 15,
+      "tests_passing": 31,
+      "tests_total": 31,
+      "coverage_pct": 98.97,
+      "roadmap_progress_pct": 30,
+      "roadmap_items_done": 14,
+      "roadmap_items_total": 47,
+      "open_blockers": 0,
+      "open_issues": 1
+    }
+  ]
+}
