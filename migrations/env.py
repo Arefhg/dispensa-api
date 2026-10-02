@@ -13,9 +13,12 @@ from app.db import Base
 config = context.config
 
 # Interpret the config file for Python logging.
-# This line sets up loggers basically.
+# disable_existing_loggers=False: fileConfig() defaults to disabling every
+# logger not explicitly listed in alembic.ini's [loggers] section. When
+# migrations run inside the test suite (see tests/conftest.py), that would
+# silently disable app.access and any other app logger that already exists.
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 # DATABASE_URL comes from app.config.settings (.env), not alembic.ini, so the
 # connection string is defined in exactly one place. DATABASE_URL_OVERRIDE lets
