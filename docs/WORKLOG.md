@@ -4,7 +4,35 @@ One entry per session, newest first. Written at the end of each session per CLAU
 
 ---
 
-## 2026-10-01
+## 2026-10-01, 14:05–15:05 — suppliers CRUD & test coverage
+
+**Built**
+- PR #18 `feat/suppliers`: suppliers CRUD reusing the exact ingredients pattern (deps, errors, service/router shape, test structure). One new dependency: Pydantic's `EmailStr` + `email-validator`, for `email` format validation — lowercased via a field_validator and enforced again at the DB level (`CHECK email = lower(email)`). Second migration, reviewed by hand before applying; verified `upgrade head` → `downgrade -1` → `upgrade head` all work
+- Fixed a real bug in both `services/ingredients.py` and `services/suppliers.py`, found by Aref reviewing the update functions before any test existed: the 409 conflict message on update read the ORM object's `.name` *after* `db.rollback()`, which expires the object and silently reloads the pre-update name from the database, not the name actually requested. Fixed to use `data.name` directly (same as create already did); a regression test was written afterwards for each resource to prove the fix and guard against it regressing
+- PR #19 `feat/coverage`: `pytest-cov` added; coverage measured for `app/`, missing lines shown locally, gated at 80% in CI only (not locally, by request) via a CI-specific `--cov-fail-under=80` flag. A `Coverage summary` CI step writes the report into the GitHub job summary even when the gate fails
+- Closed two real coverage gaps (97% → 99%): `get_current_restaurant_id()`'s success path and its "DEV_RESTAURANT_ID not set" guard, both bypassed by every test overriding that dependency. Added a supplier-email-update test that closes a third gap and protects against a specific failure mode: if the lowercase validator broke, the DB CHECK would reject the row and the IntegrityError handler would misreport it as a name conflict
+- README: no coverage badge or number, deliberately — one line pointing at the CI job summary as the live source
+- Planned structured JSON logging with a request ID (full plan proposed, three additions requested) but stopped before branching, to start fresh next session
+
+**Decisions**
+- Suppliers CRUD reuses ingredients' patterns file-for-file; the only new pattern is `EmailStr`/`email-validator`, flagged and confirmed before adding
+- Coverage's 80% floor enforced in CI only, not local `pytest` runs — local runs just report the number, so routine dev loops don't get interrupted by an in-progress feature's coverage dipping temporarily
+- No coverage badge or number in README — both risk going stale faster than anyone remembers to update them; the CI job summary is already the accurate, live number
+
+**Learned**
+- `db.rollback()` expires SQLAlchemy ORM objects' attributes, so the next access re-fetches from the database — building an error message from the object *after* rolling back silently shows stale data, not what was actually attempted
+- A same-name rename test can't distinguish "shows the old name" from "shows the new name" when they're identical by construction — the regression test needs two distinct names to actually prove the fix
+- `coverage`'s `fail_under` can live either in `pyproject.toml` (applies everywhere) or as a one-off CLI flag (`--cov-fail-under`, scoped to a single invocation) — useful for exactly this "strict in CI, lenient locally" split
+- Line coverage only proves code *ran*, not that it ran *correctly* — a test with no assertions scores identically to one that actually checks behavior
+
+**Problems hit & how they were solved**
+- The 409-message bug was caught by Aref reviewing the service code directly, before any test exposed it — the regression tests were written afterwards specifically to prove the fix and lock in the correct behavior
+
+**Time spent:** ~1h (14:05–15:05): suppliers CRUD + test coverage.
+
+---
+
+## 2026-10-01, 9:30–11:20
 
 **Built**
 - Set up a weekly status report routine (Claude Code Routines, Fridays 17:55) that generates a PDF report and opens a PR
